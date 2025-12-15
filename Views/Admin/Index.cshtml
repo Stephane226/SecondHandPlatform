@@ -1,0 +1,144 @@
+@{
+    ViewData["Title"] = "Admin Dashboard";
+    var stats = Model;
+}
+
+<div class="container mt-4">
+    <h2><i class="bi bi-speedometer2"></i> Admin Dashboard</h2>
+    <p class="text-muted">Overview of your platform statistics</p>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-white bg-primary">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title">Total Users</h6>
+                            <h2 class="mb-0">@stats.TotalUsers</h2>
+                        </div>
+                        <i class="bi bi-people" style="font-size: 2rem;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-success">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title">Total Products</h6>
+                            <h2 class="mb-0">@stats.TotalProducts</h2>
+                        </div>
+                        <i class="bi bi-box-seam" style="font-size: 2rem;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-info">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title">Categories</h6>
+                            <h2 class="mb-0">@stats.TotalCategories</h2>
+                        </div>
+                        <i class="bi bi-tags" style="font-size: 2rem;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-warning">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title">Recent Items</h6>
+                            <h2 class="mb-0">@stats.RecentProducts.Count</h2>
+                        </div>
+                        <i class="bi bi-clock-history" style="font-size: 2rem;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="bi bi-lightning"></i> Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-2">
+                            <a asp-action="Categories" class="btn btn-outline-primary w-100">
+                                <i class="bi bi-tags"></i> Manage Categories
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a asp-action="Products" class="btn btn-outline-success w-100">
+                                <i class="bi bi-box-seam"></i> Manage Products
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a asp-action="Users" class="btn btn-outline-info w-100">
+                                <i class="bi bi-people"></i> Manage Users
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a asp-controller="Products" asp-action="Create" class="btn btn-outline-warning w-100">
+                                <i class="bi bi-plus-circle"></i> Add Product
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Products -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="bi bi-clock-history"></i> Recent Products</h5>
+                </div>
+                <div class="card-body">
+                    @if (stats.RecentProducts.Any())
+                    {
+                        <div class="list-group">
+                            @foreach (var product in stats.RecentProducts)
+                            {
+                                <a href="/Products/Details/@product.Id" class="list-group-item list-group-item-action">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">
+                                            <i class="bi bi-box"></i> @product.Title
+                                        </h6>
+                                        <small class="text-success fw-bold">@product.Price.ToString("C")</small>
+                                    </div>
+                                    <p class="mb-1 small">@(product.Description.Length > 100 ? product.Description.Substring(0, 100) + "..." : product.Description)</p>
+                                    <div class="d-flex justify-content-between">
+                                        <small class="text-muted">
+                                            <i class="bi bi-person"></i> @product.User.FullName
+                                        </small>
+                                        <small class="text-muted">
+                                            <i class="bi bi-calendar"></i> @product.UploadDate.ToString("MMM dd, yyyy")
+                                        </small>
+                                    </div>
+                                </a>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle"></i> No recent products found.
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

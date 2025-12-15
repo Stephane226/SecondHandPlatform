@@ -1,0 +1,212 @@
+@model IEnumerable<SecondHandPlatform.ViewModels.UserRolesViewModel>
+@{
+    ViewData["Title"] = "Manage Users";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2><i class="bi bi-people"></i> Manage Users</h2>
+            <p class="text-muted">Admin management of all registered users</p>
+        </div>
+    </div>
+
+    <!-- Success/Error Messages -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle"></i> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle"></i> @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (Model.Any())
+    {
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-primary">
+                    <tr>
+                        <th>User ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Roles</th>
+                        <th>Status</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model)
+                    {
+                        var isLocked = false; // This would come from your ViewModel if you add it
+                        
+                        <tr>
+                            <td>
+                                <small class="text-muted">@user.UserId.Substring(0, 8)...</small>
+                            </td>
+                            <td>
+                                <strong>@(user.FullName ?? "No Name")</strong>
+                            </td>
+                            <td>@user.Email</td>
+                            <td>
+                                @foreach (var role in user.Roles)
+                                {
+                                    <span class="badge @(role == "Admin" ? "bg-danger" : "bg-secondary") me-1">
+                                        @role
+                                    </span>
+                                }
+                                @if (user.Roles.Count == 0)
+                                {
+                                    <span class="badge bg-light text-dark">No Roles</span>
+                                }
+                            </td>
+                            <td>
+                                @if (isLocked)
+                                {
+                                    <span class="badge bg-danger">
+                                        <i class="bi bi-lock"></i> Locked
+                                    </span>
+                                }
+                                else if (user.Roles.Contains("Admin"))
+                                {
+                                    <span class="badge bg-success">
+                                        <i class="bi bi-shield-check"></i> Admin
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-info">
+                                        <i class="bi bi-person"></i> User
+                                    </span>
+                                }
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group" aria-label="User Actions">
+                                    <!-- View Details Button -->
+                                    <a asp-action="UserDetails" asp-route-id="@user.UserId" 
+                                       class="btn btn-sm btn-outline-info" title="View Details">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    
+                                    <!-- Toggle Admin Role Button -->
+                                    <form asp-action="ToggleAdminRole" method="post" class="d-inline">
+                                        <input type="hidden" name="id" value="@user.UserId" />
+                                        <button type="submit" class="btn btn-sm @(user.Roles.Contains("Admin") ? "btn-outline-danger" : "btn-outline-primary")"
+                                                title="@(user.Roles.Contains("Admin") ? "Remove Admin Role" : "Make Admin")">
+                                            <i class="bi @(user.Roles.Contains("Admin") ? "bi-person-dash" : "bi-person-plus")"></i>
+                                        </button>
+                                    </form>
+                                    
+                                    <!-- Toggle User Status (Lock/Unlock) Button -->
+                                    <form asp-action="ToggleUserStatus" method="post" class="d-inline">
+                                        <input type="hidden" name="id" value="@user.UserId" />
+                                        <button type="submit" class="btn btn-sm @(isLocked ? "btn-success" : "btn-outline-warning")"
+                                                title="@(isLocked ? "Unlock User" : "Lock User")">
+                                            <i class="bi @(isLocked ? "bi-unlock" : "bi-lock")"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Statistics -->
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6 class="text-muted">Total Users</h6>
+                                <h4 class="mb-0">@Model.Count()</h4>
+                            </div>
+                            <div class="avatar bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                <i class="bi bi-people fs-4"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6 class="text-muted">Admin Users</h6>
+                                <h4 class="mb-0">@Model.Count(u => u.Roles.Contains("Admin"))</h4>
+                            </div>
+                            <div class="avatar bg-danger text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                <i class="bi bi-shield-check fs-4"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6 class="text-muted">Regular Users</h6>
+                                <h4 class="mb-0">@Model.Count(u => !u.Roles.Contains("Admin"))</h4>
+                            </div>
+                            <div class="avatar bg-info text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                <i class="bi bi-person fs-4"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-5">
+            <div class="mb-4">
+                <i class="bi bi-people" style="font-size: 64px; color: #ccc;"></i>
+            </div>
+            <h4 class="mb-3">No users found</h4>
+            <p class="text-muted mb-4">There are no registered users in the system yet.</p>
+            <div class="d-flex justify-content-center gap-3">
+                <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-primary">
+                    <i class="bi bi-person-plus"></i> Register Test User
+                </a>
+                <a asp-controller="Admin" asp-action="Index" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Back to Dashboard
+                </a>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        // Auto-dismiss alerts after 5 seconds
+        setTimeout(function() {
+            $('.alert').alert('close');
+        }, 5000);
+
+        // Confirm before deleting/locking
+        $(document).on('submit', 'form', function(e) {
+            var buttonText = $(this).find('button[type="submit"]').text().toLowerCase();
+            
+            if (buttonText.includes('lock') || buttonText.includes('delete') || buttonText.includes('revoke')) {
+                var action = buttonText.includes('lock') ? 'lock' : 
+                             buttonText.includes('revoke') ? 'revoke admin privileges' : 'delete';
+                
+                if (!confirm('Are you sure you want to ' + action + ' this user?')) {
+                    e.preventDefault();
+                }
+            }
+        });
+    </script>
+}

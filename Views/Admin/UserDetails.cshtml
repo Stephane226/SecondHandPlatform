@@ -1,0 +1,124 @@
+@model SecondHandPlatform.ViewModels.UserDetailsViewModel
+
+@{
+    ViewData["Title"] = "User Details";
+}
+
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0"><i class="bi bi-person-badge"></i> User Details</h4>
+        </div>
+        <div class="card-body">
+            <!-- User Info -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <h5>User Information</h5>
+                    <dl class="row">
+                        <dt class="col-sm-4">Full Name:</dt>
+                        <dd class="col-sm-8">@Model.FullName</dd>
+                        
+                        <dt class="col-sm-4">Email:</dt>
+                        <dd class="col-sm-8">@Model.Email</dd>
+                        
+                        <dt class="col-sm-4">Phone:</dt>
+                        <dd class="col-sm-8">@(Model.PhoneNumber ?? "Not provided")</dd>
+                        
+                        <dt class="col-sm-4">Address:</dt>
+                        <dd class="col-sm-8">@(Model.Address ?? "Not provided")</dd>
+                        
+                        <dt class="col-sm-4">Status:</dt>
+                        <dd class="col-sm-8">
+                            @if (Model.IsLockedOut)
+                            {
+                                <span class="badge bg-danger">Locked Out</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success">Active</span>
+                            }
+                        </dd>
+                    </dl>
+                </div>
+                <div class="col-md-6">
+                    <h5>Roles</h5>
+                    <div class="mb-3">
+                        @foreach (var role in Model.Roles)
+                        {
+                            <span class="badge @(role == "Admin" ? "bg-danger" : "bg-secondary") me-1">
+                                @role
+                            </span>
+                        }
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="btn-group" role="group">
+                        <form asp-action="ToggleUserStatus" method="post" class="d-inline me-2">
+                            <input type="hidden" name="id" value="@Model.UserId" />
+                            <button type="submit" class="btn @(Model.IsLockedOut ? "btn-success" : "btn-warning")">
+                                <i class="bi @(Model.IsLockedOut ? "bi-unlock" : "bi-lock")"></i>
+                                @(Model.IsLockedOut ? "Unlock User" : "Lock User")
+                            </button>
+                        </form>
+                        
+                        <form asp-action="ToggleAdminRole" method="post" class="d-inline">
+                            <input type="hidden" name="id" value="@Model.UserId" />
+                            <button type="submit" class="btn @(Model.Roles.Contains("Admin") ? "btn-outline-danger" : "btn-outline-primary")">
+                                <i class="bi @(Model.Roles.Contains("Admin") ? "bi-person-dash" : "bi-person-plus")"></i>
+                                @(Model.Roles.Contains("Admin") ? "Remove Admin" : "Make Admin")
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- User Products -->
+            <div class="mt-4">
+                <h5>Products Posted (@Model.Products.Count)</h5>
+                @if (Model.Products.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Price</th>
+                                    <th>Category</th>
+                                    <th>Date Posted</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var product in Model.Products)
+                                {
+                                    <tr>
+                                        <td>@product.Title</td>
+                                        <td>@product.Price.ToString("C")</td>
+                                        <td>@product.Category.Name</td>
+                                        <td>@product.UploadDate.ToString("MM/dd/yyyy")</td>
+                                        <td>
+                                            <a href="/Products/Details/@product.Id" class="btn btn-sm btn-outline-info">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted">This user hasn't posted any products yet.</p>
+                }
+            </div>
+            
+            <!-- Back Button -->
+            <div class="mt-4">
+                <a asp-action="Users" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Back to Users List
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

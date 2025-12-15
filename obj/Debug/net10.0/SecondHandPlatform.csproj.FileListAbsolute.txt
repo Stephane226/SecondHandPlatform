@@ -201,6 +201,7 @@ D:\dotnet\SecondHandPlatform\SecondHandPlatform\obj\Debug\net10.0\SecondHandPlat
 D:\dotnet\SecondHandPlatform\SecondHandPlatform\obj\Debug\net10.0\SecondHandPlatform.MvcApplicationPartsAssemblyInfo.cache
 D:\dotnet\SecondHandPlatform\SecondHandPlatform\obj\Debug\net10.0\SecondHandPlatform.RazorAssemblyInfo.cache
 D:\dotnet\SecondHandPlatform\SecondHandPlatform\obj\Debug\net10.0\SecondHandPlatform.RazorAssemblyInfo.cs
+D:\dotnet\SecondHandPlatform\SecondHandPlatform\obj\Debug\net10.0\SecondHandPlatform.sourcelink.json
 D:\dotnet\SecondHandPlatform\SecondHandPlatform\obj\Debug\net10.0\rjimswa.dswa.cache.json
 D:\dotnet\SecondHandPlatform\SecondHandPlatform\obj\Debug\net10.0\rjsmrazor.dswa.cache.json
 D:\dotnet\SecondHandPlatform\SecondHandPlatform\obj\Debug\net10.0\rjsmcshtml.dswa.cache.json
@@ -388,4 +389,3 @@ D:\dotnet\SecondHandPlatform\SecondHandPlatform\obj\Debug\net10.0\refint\SecondH
 D:\dotnet\SecondHandPlatform\SecondHandPlatform\obj\Debug\net10.0\SecondHandPlatform.pdb
 D:\dotnet\SecondHandPlatform\SecondHandPlatform\obj\Debug\net10.0\SecondHandPlatform.genruntimeconfig.cache
 D:\dotnet\SecondHandPlatform\SecondHandPlatform\obj\Debug\net10.0\ref\SecondHandPlatform.dll
-D:\dotnet\SecondHandPlatform\SecondHandPlatform\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt
