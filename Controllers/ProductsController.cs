@@ -114,7 +114,11 @@ public async Task<IActionResult> Create(Product product, IFormFile imageFile)
 {
     Console.WriteLine("=== CREATE PRODUCT DEBUG ===");
     Console.WriteLine($"ModelState IsValid: {ModelState.IsValid}");
-    
+    // Ensure the product has the current user's id before validation
+    var userId = _userManager.GetUserId(User);
+    product.UserId = userId;
+    product.UploadDate = DateTime.Now;
+
     if (!ModelState.IsValid)
     {
         Console.WriteLine("ModelState Errors:");
@@ -126,14 +130,10 @@ public async Task<IActionResult> Create(Product product, IFormFile imageFile)
                 Console.WriteLine($"{key}: {string.Join(", ", errors.Select(e => e.ErrorMessage))}");
             }
         }
-        
+
         ViewData["Categories"] = await _context.Categories.ToListAsync();
         return View(product);
     }
-    
-    var userId = _userManager.GetUserId(User);
-    product.UserId = userId;
-    product.UploadDate = DateTime.Now;
     
     Console.WriteLine($"Creating product for user: {userId}");
     Console.WriteLine($"Product data - Title: {product.Title}, Price: {product.Price}, CategoryId: {product.CategoryId}");

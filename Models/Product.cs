@@ -32,18 +32,17 @@ namespace SecondHandPlatform.Models
         public DateTime UploadDate { get; set; } = DateTime.Now;
 
         // Foreign keys
-        [Required(ErrorMessage = "User ID is required")]
-        public string UserId { get; set; }
+        public string? UserId { get; set; }
 
         [Required(ErrorMessage = "Category is required")]
         [Display(Name = "Category")]
         public int CategoryId { get; set; }
 
-        // Navigation properties
+        // Navigation properties (nullable to avoid implicit required validation)
         [ForeignKey("UserId")]
-        public ApplicationUser User { get; set; }
+        public ApplicationUser? User { get; set; }
 
         [ForeignKey("CategoryId")]
-        public Category Category { get; set; }
+        public Category? Category { get; set; }
     }
 }
