@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SecondHandPlatform")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f8009cfd2316fd8321adb766b4fae1701697e943")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8600a91e7e46b96179f8b57c7823afaacb08351b")]
 [assembly: System.Reflection.AssemblyProductAttribute("SecondHandPlatform")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SecondHandPlatform")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
