@@ -30,6 +30,11 @@ namespace SecondHandPlatform.Data
                 .WithMany(c => c.Products)
                 .HasForeignKey(p => p.CategoryId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            // ADD THIS: Fix for Price column precision warning
+            builder.Entity<Product>()
+                .Property(p => p.Price)
+                .HasPrecision(18, 2); // 18 total digits, 2 decimal places
         }
     }
 }

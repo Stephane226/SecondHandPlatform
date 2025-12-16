@@ -1,0 +1,30 @@
+@{
+    ViewData["Title"] = "Debug Form";
+}
+
+<div class="container mt-4">
+    <h2>Debug Form Test</h2>
+    
+    @if (ViewBag.Message != null)
+    {
+        <div class="alert alert-info">
+            @ViewBag.Message
+        </div>
+    }
+    
+    <form method="post" action="/Home/DebugForm">
+        @Html.AntiForgeryToken()
+        
+        <div class="mb-3">
+            <label class="form-label">Name</label>
+            <input type="text" name="name" class="form-control" required />
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">Description</label>
+            <textarea name="description" class="form-control" rows="3"></textarea>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Test Submit</button>
+    </form>
+</div>

@@ -34,6 +34,21 @@ namespace SecondHandPlatform.Controllers
             return View();
         }
 
+
+        public IActionResult DebugForm()
+{
+    return View();
+}
+
+[HttpPost]
+public IActionResult DebugForm(string name, string description)
+{
+    ViewBag.Message = $"Received - Name: {name}, Description: {description}";
+    return View();
+}
+
+
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

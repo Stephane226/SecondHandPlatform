@@ -7,13 +7,16 @@ namespace SecondHandPlatform.Models
         [Key]
         public int Id { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Category name is required")]
         [Display(Name = "Category Name")]
+        [StringLength(100, ErrorMessage = "Name cannot exceed 100 characters")]
         public string Name { get; set; }
 
+        [Display(Name = "Description")]
+        [StringLength(500, ErrorMessage = "Description cannot exceed 500 characters")]
         public string? Description { get; set; }
 
         // Navigation property
-        public ICollection<Product> Products { get; set; }
+        public ICollection<Product> Products { get; set; } = new List<Product>();
     }
 }

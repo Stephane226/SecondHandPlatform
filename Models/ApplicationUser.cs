@@ -1,3 +1,4 @@
+// Models/ApplicationUser.cs
 using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
 
@@ -5,9 +6,8 @@ namespace SecondHandPlatform.Models
 {
     public class ApplicationUser : IdentityUser
     {
-        [Required]
         [Display(Name = "Full Name")]
-          public string? FullName { get; set; } 
+        public string? FullName { get; set; }
 
         [Display(Name = "Address")]
         public string? Address { get; set; }

@@ -60,19 +60,46 @@ namespace SecondHandPlatform.Controllers
             return View();
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateCategory(Category category)
+     
+     [HttpPost]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> CreateCategory(Category category)
+{
+    Console.WriteLine($"CreateCategory POST called. Name: {category?.Name}, Description: {category?.Description}");
+    
+    if (ModelState.IsValid)
+    {
+        Console.WriteLine("Model is valid. Saving to database...");
+        
+        try
         {
-            if (ModelState.IsValid)
-            {
-                _context.Categories.Add(category);
-                await _context.SaveChangesAsync();
-                TempData["SuccessMessage"] = "Category created successfully!";
-                return RedirectToAction(nameof(Categories));
-            }
-            return View(category);
+            _context.Categories.Add(category);
+            await _context.SaveChangesAsync();
+            
+            Console.WriteLine($"Category saved with ID: {category.Id}");
+            TempData["SuccessMessage"] = $"Category '{category.Name}' created successfully!";
+            
+            return RedirectToAction(nameof(Categories));
         }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error saving category: {ex.Message}");
+            ModelState.AddModelError("", "An error occurred while saving. Please try again.");
+        }
+    }
+    else
+    {
+        Console.WriteLine("Model is invalid. Errors:");
+        foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+        {
+            Console.WriteLine($"- {error.ErrorMessage}");
+        }
+    }
+    
+    // If we got here, something failed
+    return View(category);
+}
+
 
         [HttpGet]
         public async Task<IActionResult> EditCategory(int id)

@@ -8,16 +8,18 @@
     <div class="row justify-content-center">
         <div class="col-md-6">
             <div class="card shadow">
-                <div class="card-header bg-primary text-white">
+                <div class="card-header bg-success text-white">
                     <h4 class="mb-0"><i class="bi bi-plus-circle"></i> Create New Category</h4>
                 </div>
                 <div class="card-body">
-                    <form asp-action="CreateCategory">
-                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <form asp-action="CreateCategory" method="post" id="createCategoryForm">
+                        @Html.AntiForgeryToken()
+                        
+                        <div asp-validation-summary="All" class="text-danger"></div>
                         
                         <div class="mb-3">
                             <label asp-for="Name" class="form-label">Category Name *</label>
-                            <input asp-for="Name" class="form-control" placeholder="Enter category name" />
+                            <input asp-for="Name" class="form-control" placeholder="Enter category name" required />
                             <span asp-validation-for="Name" class="text-danger"></span>
                         </div>
                         
@@ -32,7 +34,7 @@
                             <a asp-action="Categories" class="btn btn-outline-secondary me-md-2">
                                 <i class="bi bi-arrow-left"></i> Back to List
                             </a>
-                            <button type="submit" class="btn btn-primary">
+                            <button type="submit" class="btn btn-success" id="submitBtn">
                                 <i class="bi bi-check-circle"></i> Create Category
                             </button>
                         </div>
@@ -44,5 +46,31 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    
+    <script>
+        // Debug script
+        $(document).ready(function() {
+            console.log("Create Category page loaded");
+            
+            $('#createCategoryForm').on('submit', function(e) {
+                console.log('Form submitted');
+                console.log('Name:', $('#Name').val());
+                console.log('Description:', $('#Description').val());
+                
+                // Show loading state
+                $('#submitBtn').prop('disabled', true).html('<i class="bi bi-hourglass-split"></i> Creating...');
+            });
+            
+            // Check if form has validation errors
+            if ($('.text-danger').length > 0) {
+                console.log('Form has validation errors');
+                $('.text-danger').each(function() {
+                    console.log('Error:', $(this).text());
+                });
+            }
+        });
+    </script>
 }
