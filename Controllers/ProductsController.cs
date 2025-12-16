@@ -107,66 +107,110 @@ namespace SecondHandPlatform.Controllers
         }
 
         // POST: Products/Create
-        [HttpPost]
-        [Authorize]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Product product, IFormFile imageFile)
+[HttpPost]
+[Authorize]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> Create(Product product, IFormFile imageFile)
+{
+    Console.WriteLine("=== CREATE PRODUCT DEBUG ===");
+    Console.WriteLine($"ModelState IsValid: {ModelState.IsValid}");
+    
+    if (!ModelState.IsValid)
+    {
+        Console.WriteLine("ModelState Errors:");
+        foreach (var key in ModelState.Keys)
         {
-            var userId = _userManager.GetUserId(User);
-            product.UserId = userId;
-            product.UploadDate = DateTime.Now;
-
-            if (ModelState.IsValid)
+            var errors = ModelState[key].Errors;
+            if (errors.Count > 0)
             {
-                // Handle image upload
-                if (imageFile != null && imageFile.Length > 0)
-                {
-                    // Validate file size (5MB max)
-                    if (imageFile.Length > 5 * 1024 * 1024)
-                    {
-                        ModelState.AddModelError("ImageFile", "File size must be less than 5MB");
-                        ViewData["Categories"] = _context.Categories.ToList();
-                        return View(product);
-                    }
-
-                    // Validate file extension
-                    var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
-                    var fileExtension = Path.GetExtension(imageFile.FileName).ToLower();
-                    if (!allowedExtensions.Contains(fileExtension))
-                    {
-                        ModelState.AddModelError("ImageFile", "Only image files are allowed (jpg, jpeg, png, gif)");
-                        ViewData["Categories"] = _context.Categories.ToList();
-                        return View(product);
-                    }
-
-                    // Create uploads directory if it doesn't exist
-                    var uploadsFolder = Path.Combine(_environment.WebRootPath, "uploads");
-                    if (!Directory.Exists(uploadsFolder))
-                    {
-                        Directory.CreateDirectory(uploadsFolder);
-                    }
-
-                    // Generate unique filename
-                    var uniqueFileName = Guid.NewGuid().ToString() + fileExtension;
-                    var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-                    // Save file
-                    using (var fileStream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await imageFile.CopyToAsync(fileStream);
-                    }
-
-                    product.ImagePath = $"/uploads/{uniqueFileName}";
-                }
-
-                _context.Add(product);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(MyProducts));
+                Console.WriteLine($"{key}: {string.Join(", ", errors.Select(e => e.ErrorMessage))}");
             }
-
-            ViewData["Categories"] = _context.Categories.ToList();
+        }
+        
+        ViewData["Categories"] = await _context.Categories.ToListAsync();
+        return View(product);
+    }
+    
+    var userId = _userManager.GetUserId(User);
+    product.UserId = userId;
+    product.UploadDate = DateTime.Now;
+    
+    Console.WriteLine($"Creating product for user: {userId}");
+    Console.WriteLine($"Product data - Title: {product.Title}, Price: {product.Price}, CategoryId: {product.CategoryId}");
+    
+    // Handle image upload
+    if (imageFile != null && imageFile.Length > 0)
+    {
+        Console.WriteLine($"Image file: {imageFile.FileName}, Size: {imageFile.Length} bytes");
+        
+        // Validate file size (5MB max)
+        if (imageFile.Length > 5 * 1024 * 1024)
+        {
+            Console.WriteLine("File too large");
+            ModelState.AddModelError("ImageFile", "File size must be less than 5MB");
+            ViewData["Categories"] = await _context.Categories.ToListAsync();
             return View(product);
         }
+
+        // Validate file extension
+        var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+        var fileExtension = Path.GetExtension(imageFile.FileName).ToLower();
+        if (!allowedExtensions.Contains(fileExtension))
+        {
+            Console.WriteLine($"Invalid file extension: {fileExtension}");
+            ModelState.AddModelError("ImageFile", "Only image files are allowed (jpg, jpeg, png, gif)");
+            ViewData["Categories"] = await _context.Categories.ToListAsync();
+            return View(product);
+        }
+
+        // Create uploads directory if it doesn't exist
+        var uploadsFolder = Path.Combine(_environment.WebRootPath, "uploads");
+        if (!Directory.Exists(uploadsFolder))
+        {
+            Directory.CreateDirectory(uploadsFolder);
+        }
+
+        // Generate unique filename
+        var uniqueFileName = Guid.NewGuid().ToString() + fileExtension;
+        var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+        // Save file
+        using (var fileStream = new FileStream(filePath, FileMode.Create))
+        {
+            await imageFile.CopyToAsync(fileStream);
+        }
+
+        product.ImagePath = $"/uploads/{uniqueFileName}";
+        Console.WriteLine($"Image saved to: {product.ImagePath}");
+    }
+    else
+    {
+        Console.WriteLine("No image file provided");
+    }
+
+    try
+    {
+        _context.Add(product);
+        await _context.SaveChangesAsync();
+        
+        Console.WriteLine($"Product created successfully with ID: {product.Id}");
+        TempData["SuccessMessage"] = "Product created successfully!";
+        
+        return RedirectToAction(nameof(MyProducts));
+    }
+    catch (DbUpdateException ex)
+    {
+        Console.WriteLine($"Database error: {ex.Message}");
+        Console.WriteLine($"Inner exception: {ex.InnerException?.Message}");
+        
+        ModelState.AddModelError("", "An error occurred while saving. Please try again.");
+        ViewData["Categories"] = await _context.Categories.ToListAsync();
+        return View(product);
+    }
+}
+
+
+
 
         // GET: Products/Edit/5
         [Authorize]
